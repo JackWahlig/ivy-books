@@ -1,19 +1,120 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 5, 6);
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isAllowedEmail() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/allowedEmails/$(request.auth.token.email));
+    }
+
+    // ─── Users ────────────────────────────────────────────────────────────────
+
+    match /users/{uid} {
+      // Any signed-in invited user can read user profiles (needed for display names)
+      allow read: if isAllowedEmail();
+      // Users can only write their own document
+      allow create: if isUser(uid) && isAllowedEmail();
+      // Users can update their own doc but cannot grant themselves admin
+      allow update: if isUser(uid) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin']) ||
+        isAdmin();
+    }
+
+    // ─── Allowed emails (invite list) ─────────────────────────────────────────
+
+    match /allowedEmails/{email} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ─── Books ────────────────────────────────────────────────────────────────
+
+    match /books/{bookId} {
+      allow read: if isAllowedEmail();
+      // Any invited user can cache a new book (from search)
+      allow create: if isAllowedEmail();
+      // Only admins can update book metadata like isArchived, isOnPrefList
+      allow update: if isAllowedEmail() &&
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['isArchived']) || isAdmin();
+    }
+
+    // ─── Lineup ───────────────────────────────────────────────────────────────
+
+    match /lineup/{docId} {
+      allow read: if isAllowedEmail();
+      allow write: if isAdmin();
+    }
+
+    // ─── User book status ─────────────────────────────────────────────────────
+
+    match /userBookStatus/{docId} {
+      allow read: if isAllowedEmail();
+      // Users can only write their own status documents
+      // Document IDs are in the format {uid}_{bookId}
+      allow write: if isAllowedEmail() &&
+        request.resource.data.uid == request.auth.uid;
+    }
+
+    // ─── Reviews ──────────────────────────────────────────────────────────────
+
+    match /reviews/{docId} {
+      allow read: if isAllowedEmail();
+      // Users can create or update their own reviews but not delete them
+      allow create: if isAllowedEmail() &&
+        request.resource.data.uid == request.auth.uid;
+      allow update: if isAllowedEmail() &&
+        resource.data.uid == request.auth.uid &&
+        request.resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // ─── Suggestions ──────────────────────────────────────────────────────────
+
+    match /suggestions/{bookId} {
+      allow read: if isAllowedEmail();
+      // Any invited user can create a suggestion
+      allow create: if isAllowedEmail() &&
+        request.resource.data.suggestedBy == request.auth.uid;
+      // Only the suggester or admin can delete
+      allow delete: if isAllowedEmail() &&
+        resource.data.suggestedBy == request.auth.uid || isAdmin();
+      allow update: if isAdmin();
+    }
+
+    // ─── User prefs ───────────────────────────────────────────────────────────
+
+    match /userPrefs/{uid} {
+      allow read: if isAllowedEmail();
+      // Users can only write their own prefs
+      allow write: if isUser(uid);
+    }
+
+    // ─── Archive ──────────────────────────────────────────────────────────────
+
+    match /archive/{docId} {
+      allow read: if isAllowedEmail();
+      allow create, delete: if isAdmin();
+      // Admins can update anything; allowed users can only refresh derived stats
+      allow update: if isAdmin() ||
+        (isAllowedEmail() &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['averageRating', 'readers']));
     }
   }
 }
