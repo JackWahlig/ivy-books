@@ -1,5 +1,5 @@
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import ArchivePage from "./pages/ArchivePage";
 import BookPage from "./pages/BookPage";
