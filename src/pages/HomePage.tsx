@@ -24,7 +24,7 @@ export default function HomePage() {
       {/* Page header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-[#0E3386]">Current Lineup</h1>
-        <p className="text-gray-500 mt-1">The club's reading schedule</p>
+        <p className="text-gray-500 mt-1">Due up for the club</p>
       </div>
 
       {/* Lineup slots */}

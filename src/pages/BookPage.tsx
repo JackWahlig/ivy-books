@@ -126,7 +126,7 @@ export default function BookPage() {
                 onClick={handleSuggest}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-[#C4A35A] text-white rounded-lg text-sm font-medium cursor-pointer hover:bg-[#C4A35A]/90 transition-colors"
               >
-                ⭐ Suggest for Club
+                Suggest for Club
               </button>
             )}
           </div>

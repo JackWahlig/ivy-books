@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Rajdhani", ui-sans-serif, system-ui, sans-serif;
+
+  --color-cubs-blue: #0e3386;
+  --color-cubs-red: #cc3433;
+  --color-cubs-cream: #f5f0e8;
+  --color-cubs-gold: #c4a35a;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cubs-cream);
+  color: #1a1a1a;
+}
+
+/* Apply display font to all headings globally */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Prose styling for SafeHtml rendered descriptions */
+.book-description p {
+  margin-bottom: 0.5rem;
+}
+.book-description p:last-child {
+  margin-bottom: 0;
+}
+.book-description br {
+  display: block;
+  margin-bottom: 0.25rem;
+}

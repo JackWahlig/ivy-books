@@ -1,6 +1,6 @@
 import { AT_BAT, BOOKS, IN_THE_HOLE, ON_DECK } from "../../constants";
 import type { Book, LineupSlot } from "../../types";
-import { ChevronsRight, Pencil, Trash2 } from "lucide-react";
+import { ChevronsRight, Cog, Pencil, Trash2 } from "lucide-react";
 import {
   advanceLineup,
   removeFromLineup,
@@ -167,7 +167,7 @@ export default function AdminControls({
     <>
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5">
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-lg">⚙️</span>
+          <Cog className="w-5 h-5" />
           <h2 className="font-bold text-gray-800">Admin Controls</h2>
         </div>
 

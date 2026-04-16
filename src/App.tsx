@@ -5,6 +5,7 @@ import ArchivePage from "./pages/ArchivePage";
 import BookPage from "./pages/BookPage";
 import Header from "./components/layout/Header";
 import HomePage from "./pages/HomePage";
+import NotFoundPage from "./pages/NotFoundPage";
 import PrefListPage from "./pages/PrefListPage";
 import ProfilePage from "./pages/ProfilePage";
 import SearchResultsPage from "./pages/SearchResultsPage";
@@ -35,7 +36,7 @@ function ProtectedRoutes() {
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/archive" element={<ArchivePage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
     </div>
