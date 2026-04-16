@@ -1,5 +1,6 @@
 import { type ReadingMethod, type ReadingStatus } from "../types";
 
+import { ChevronDown, ChevronUp } from "lucide-react";
 import toast from "react-hot-toast";
 import ReviewForm from "../components/book/ReviewForm";
 import ReviewList from "../components/book/ReviewList";
@@ -24,6 +25,7 @@ export default function BookPage() {
   );
   const { suggestions, addSuggestion } = useSuggestions();
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
 
   const displayName =
     currentUser!.customDisplayName ?? currentUser!.displayName;
@@ -133,10 +135,33 @@ export default function BookPage() {
 
           {/* Description */}
           {book.description && (
-            <SafeHtml
-              html={book.description}
-              className="text-sm text-gray-700 leading-relaxed line-clamp-4 prose prose-sm max-w-none"
-            />
+            <div className="flex flex-col gap-1">
+              <div
+                onClick={() => setDescExpanded((v) => !v)}
+                className="cursor-pointer"
+              >
+                <SafeHtml
+                  html={book.description}
+                  className={`text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none ${
+                    descExpanded ? "" : "line-clamp-4"
+                  }`}
+                />
+              </div>
+              <button
+                onClick={() => setDescExpanded((v) => !v)}
+                className="self-start flex items-center gap-0.5 text-xs text-[#0E3386] hover:underline cursor-pointer mt-0.5"
+              >
+                {descExpanded ? (
+                  <>
+                    <ChevronUp className="w-3 h-3" /> Show less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-3 h-3" /> Show more
+                  </>
+                )}
+              </button>
+            </div>
           )}
         </div>
       </div>
