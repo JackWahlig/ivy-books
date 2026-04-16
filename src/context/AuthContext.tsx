@@ -69,12 +69,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let userDocUnsub: (() => void) | null = null;
+
+    const authUnsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      // Clean up any previous user doc listener
+      if (userDocUnsub) {
+        userDocUnsub();
+        userDocUnsub = null;
+      }
+
       if (firebaseUser) {
         try {
           const appUser = await getOrCreateUserDoc(firebaseUser);
+          if (!appUser) {
+            setCurrentUser(null);
+            setLoading(false);
+            return;
+          }
           setCurrentUser(appUser);
           setAuthError(null);
+
+          // Subscribe to the user doc for real-time updates (e.g. custom name changes)
+          const { onSnapshot, doc: fsDoc } = await import("firebase/firestore");
+          userDocUnsub = onSnapshot(
+            fsDoc(db, USERS, firebaseUser.uid),
+            (snap) => {
+              if (snap.exists()) {
+                const data = snap.data();
+                setCurrentUser({
+                  uid: data.uid,
+                  email: data.email,
+                  displayName: data.displayName,
+                  customDisplayName: data.customDisplayName ?? null,
+                  isAdmin: data.isAdmin ?? false,
+                  createdAt: data.createdAt?.toDate() ?? new Date(),
+                });
+              }
+            },
+          );
         } catch (err: unknown) {
           if (err instanceof Error && err.message === NOT_INVITED_ERROR) {
             setAuthError(
@@ -89,7 +121,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      authUnsub();
+      if (userDocUnsub) userDocUnsub();
+    };
   }, []);
 
   const signInWithGoogle = async () => {

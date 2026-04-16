@@ -6,6 +6,7 @@ import BookPage from "./pages/BookPage";
 import Header from "./components/layout/Header";
 import HomePage from "./pages/HomePage";
 import PrefListPage from "./pages/PrefListPage";
+import ProfilePage from "./pages/ProfilePage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import SignInPage from "./pages/SignInPage";
 import { Toaster } from "react-hot-toast";
@@ -33,6 +34,7 @@ function ProtectedRoutes() {
           <Route path="/prefs" element={<PrefListPage />} />
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/archive" element={<ArchivePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

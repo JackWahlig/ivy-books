@@ -45,17 +45,21 @@ export default function Header() {
           </Link>
 
           {/* User menu */}
+          {/* User menu */}
           <div className="flex items-center gap-2 ml-2 pl-2 border-l border-white/20">
-            <div className="flex items-center gap-1.5 text-sm text-white/80">
+            <Link
+              to="/profile"
+              className="flex items-center gap-1.5 text-sm text-white/80 hover:text-white transition-colors cursor-pointer"
+            >
               <User className="w-4 h-4" />
               <span className="hidden md:block max-w-30 truncate">
                 {displayName}
               </span>
-            </div>
+            </Link>
             <button
               onClick={signOut}
               title="Sign out"
-              className="p-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>
