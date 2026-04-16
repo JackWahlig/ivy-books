@@ -13,6 +13,7 @@ interface ReviewFormProps {
   bookId: string;
   displayName: string;
   onReviewSubmitted: () => void;
+  onReviewLoaded?: (hasExisting: boolean) => void;
 }
 
 export default function ReviewForm({
@@ -20,6 +21,7 @@ export default function ReviewForm({
   bookId,
   displayName,
   onReviewSubmitted,
+  onReviewLoaded,
 }: ReviewFormProps) {
   const [stars, setStars] = useState(0);
   const [body, setBody] = useState("");
@@ -46,6 +48,9 @@ export default function ReviewForm({
         setExistingReview(review);
         setStars(review.stars);
         setBody(review.body);
+        onReviewLoaded?.(true);
+      } else {
+        onReviewLoaded?.(false);
       }
     }
     loadExisting();

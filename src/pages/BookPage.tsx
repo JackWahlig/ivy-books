@@ -164,6 +164,7 @@ export default function BookPage() {
               bookId={book.id}
               displayName={displayName}
               onReviewSubmitted={() => setHasReviewed(true)}
+              onReviewLoaded={(hasExisting) => setHasReviewed(hasExisting)}
             />
             {showReviews && (
               <ReviewList bookId={book.id} currentUid={currentUser!.uid} />
